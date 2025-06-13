@@ -9,14 +9,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PowerPoint Font Checker</title>
 
-  <!-- Office JavaScript API -->
-  <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" crossorigin="anonymous"></script>
+  <!-- ✅ Office JS with crossorigin fix -->
+  <script
+    type="text/javascript"
+    src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"
+    crossorigin="anonymous"
+  ></script>
 
-  <!-- Fluent UI (optional) -->
-  <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.002/office-ui-fabric-core/11.1.0/css/fabric.min.css"/>
+  <!-- ✅ Optional UI framework (Fluent UI) -->
+  <link
+    rel="stylesheet"
+    href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.002/office-ui-fabric-core/11.1.0/css/fabric.min.css"
+  />
 
-  <!-- Your custom CSS -->
-  <link href="taskpane.css" rel="stylesheet" type="text/css" />
+  <!-- ❌ Removed broken taskpane.css -->
 
   <style>
     body {
@@ -31,7 +37,8 @@
       margin-bottom: 0.5em;
     }
 
-    #scan-fonts, #copy-btn {
+    #scan-fonts,
+    #copy-btn {
       background-color: #2c2c3c;
       color: #f0f0f0;
       border: 1px solid #444;
@@ -43,7 +50,8 @@
       transition: background-color 0.2s;
     }
 
-    #scan-fonts:hover, #copy-btn:hover {
+    #scan-fonts:hover,
+    #copy-btn:hover {
       background-color: #3e3e5a;
     }
 
@@ -58,7 +66,8 @@
       color: #ffffff;
     }
 
-    pre, #output {
+    pre,
+    #output {
       font-family: Consolas, monospace;
       font-size: 0.9em;
       margin-top: 1em;
@@ -114,9 +123,9 @@
     <pre id="output"></pre>
   </div>
 
-    <div id="toast" style="display: none;"></div>
+  <div id="toast" style="display: none;"></div>
 
-  <!-- ✅ Load the main JavaScript file -->
+  <!-- ✅ Load your main JS here -->
+  <script src="taskpane.js"></script>
 </body>
 </html>
-
