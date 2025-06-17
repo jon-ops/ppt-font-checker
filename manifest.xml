@@ -12,10 +12,9 @@
 
   <DisplayName DefaultValue="Font Checker" />
   <Description DefaultValue="Checks for missing fonts in PowerPoint slides and masters." />
-  
+
   <IconUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/logo-filled%20500x500.png"/>
   <HighResolutionIconUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/logo-filled%20500x500.png"/>
-
   <SupportUrl DefaultValue="https://github.com/jon-ops/ppt-font-checker#support" />
 
   <Hosts>
@@ -36,33 +35,13 @@
           <ExtensionPoint xsi:type="Events">
             <Event Type="DocumentOpen" Function="onDocumentOpen"/>
           </ExtensionPoint>
-          <ExtensionPoint xsi:type="MessageReadCommandSurface">
-            <OfficeTab id="TabHome">
-              <Group id="fontCheckerGroup">
-                <Label resid="groupLabel" />
-                <Icon>
-                  <bt:Image size="16" resid="icon16"/>
-                  <bt:Image size="32" resid="icon32"/>
-                  <bt:Image size="80" resid="icon80"/>
-                </Icon>
-                <Control xsi:type="Button" id="fontCheckerButton">
-                  <Label resid="buttonLabel" />
-                  <Supertip>
-                    <Title resid="buttonTitle" />
-                    <Description resid="buttonDescription" />
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="icon16"/>
-                    <bt:Image size="32" resid="icon32"/>
-                    <bt:Image size="80" resid="icon80"/>
-                  </Icon>
-                  <Action xsi:type="ShowTaskpane">
-                    <SourceLocation resid="taskpaneUrl" />
-                  </Action>
-                </Control>
-              </Group>
-            </OfficeTab>
-          </ExtensionPoint>
+
+          <!-- ✅ Required FormFactor block -->
+          <FormFactor>
+            <SupportedFormFactors>
+              <SupportedFormFactor Type="Desktop" />
+            </SupportedFormFactors>
+          </FormFactor>
         </DesktopFormFactor>
       </Host>
     </Hosts>
