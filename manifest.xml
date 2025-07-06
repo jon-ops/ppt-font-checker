@@ -10,18 +10,13 @@
   <ProviderName>Font Checker</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
 
-  <DisplayName DefaultValue="PowerPoint Manager - Font Checker"/>
-  <Description DefaultValue="Quickly identify fonts used in your PowerPoint and check for missing or unsupported typefaces."/>
+  <DisplayName DefaultValue="PowerPoint Font Checker"/>
+  <Description DefaultValue="Scan your PowerPoint slides and masters to identify missing fonts."/>
 
-  <IconUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-32.png" />
-<HighResolutionIconUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-64.png" />
+  <IconUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-64.png"/>
 
-
-  <SupportUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/support"/>
-
-  <AppDomains>
-    <AppDomain>https://jon-ops.github.io</AppDomain>
-  </AppDomains>
+  <SupportUrl DefaultValue="https://github.com/jon-ops/ppt-font-checker"/>
 
   <Hosts>
     <Host Name="Presentation"/>
@@ -33,48 +28,40 @@
 
   <Permissions>ReadWriteDocument</Permissions>
 
-  <VersionOverrides Version="1.0">
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
     <Hosts>
-      <Host Name="Presentation">
+      <Host xsi:type="Presentation">
         <DesktopFormFactor>
           <GetStarted>
             <Title resid="Contoso.GetStarted.Title"/>
             <Description resid="Contoso.GetStarted.Description"/>
             <LearnMoreUrl resid="Contoso.GetStarted.LearnMoreUrl"/>
           </GetStarted>
-
-          <ExtensionPoint xsi:type="Events">
-            <Event Type="DocumentOpen" Function="onDocumentOpen" />
+          <ExtensionPoint xsi:type="TasksPane">
+            <SourceLocation resid="Contoso.Taskpane.Url"/>
+            <Title resid="Contoso.Taskpane.Title"/>
+            <RequestedHeight>300</RequestedHeight>
           </ExtensionPoint>
-
-          <FunctionFile resid="Contoso.FunctionFile.Url"/>
-
-          <TaskpaneId>ButtonId1</TaskpaneId>
-          <SourceLocation resid="Contoso.Taskpane.Url"/>
         </DesktopFormFactor>
       </Host>
     </Hosts>
-
     <Resources>
       <bt:Images>
-        <bt:Image id="Contoso.Icon.16x16" DefaultUrl="https://jon-ops.github.io/ppt-font-checker/assets/icon-16.png"/>
-        <bt:Image id="Contoso.Icon.32x32" DefaultUrl="https://jon-ops.github.io/ppt-font-checker/assets/icon-32.png"/>
-        <bt:Image id="Contoso.Icon.80x80" DefaultUrl="https://jon-ops.github.io/ppt-font-checker/assets/icon-80.png"/>
+        <bt:Image id="icon32" DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-32.png"/>
+        <bt:Image id="icon64" DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-64.png"/>
       </bt:Images>
-
       <bt:Urls>
         <bt:Url id="Contoso.Taskpane.Url" DefaultValue="https://jon-ops.github.io/ppt-font-checker/taskpane.html"/>
-        <bt:Url id="Contoso.FunctionFile.Url" DefaultValue="https://jon-ops.github.io/ppt-font-checker/function-file.html"/>
-        <bt:Url id="Contoso.GetStarted.LearnMoreUrl" DefaultValue="https://jon-ops.github.io/ppt-font-checker/learn-more"/>
+        <bt:Url id="Contoso.GetStarted.LearnMoreUrl" DefaultValue="https://github.com/jon-ops/ppt-font-checker"/>
       </bt:Urls>
-
       <bt:ShortStrings>
-        <bt:String id="Contoso.GetStarted.Title" DefaultValue="Get started with Font Checker"/>
+        <bt:String id="Contoso.Taskpane.Title" DefaultValue="Font Checker"/>
+        <bt:String id="Contoso.GetStarted.Title" DefaultValue="Check Missing Fonts"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="Contoso.GetStarted.Description" DefaultValue="Use the Font Checker Add-in to review fonts used in your presentation and flag missing ones."/>
+        <bt:String id="Contoso.GetStarted.Description" DefaultValue="Scan slides and master layouts to detect missing fonts."/>
       </bt:LongStrings>
     </Resources>
-  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides">
+  </VersionOverrides>
 
 </OfficeApp>
