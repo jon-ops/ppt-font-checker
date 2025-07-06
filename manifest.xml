@@ -13,8 +13,9 @@
   <DisplayName DefaultValue="PowerPoint Manager - Font Checker"/>
   <Description DefaultValue="Quickly identify fonts used in your PowerPoint and check for missing or unsupported typefaces."/>
 
-  <IconUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/logo-filled%20500x500.png"/>
-  <HighResolutionIconUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/logo-filled%20500x500.png"/>
+  <IconUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-32.png" />
+<HighResolutionIconUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-64.png" />
+
 
   <SupportUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/support"/>
 
@@ -74,5 +75,6 @@
         <bt:String id="Contoso.GetStarted.Description" DefaultValue="Use the Font Checker Add-in to review fonts used in your presentation and flag missing ones."/>
       </bt:LongStrings>
     </Resources>
-  </VersionOverrides>
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides">
+
 </OfficeApp>
