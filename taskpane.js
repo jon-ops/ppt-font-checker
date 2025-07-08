@@ -61,10 +61,7 @@ function showToast(message) {
   toast.style.display = "block";
 }
 
-
-
-
-export async function runFontChecker() {
+async function runFontChecker() { 
   console.log("🔍 Scan Fonts button clicked");
 
   try {
@@ -227,3 +224,4 @@ export async function runFontChecker() {
       "Error: " + (error.message || error.toString());
   }
 }
+window.runFontChecker = runFontChecker;
