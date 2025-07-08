@@ -81,78 +81,78 @@ async function runFontChecker() {
       output += `Found ${slides.items.length} slide(s).\n\n`;
 
       for (let i = 0; i < slides.items.length; i++) {
-        const slide = slides.items[i];
-        let shapes = slide.shapes;
-        let layout = slide.layout;
-        let layoutShapes = layout ? layout.shapes : null;
+        try {
+          const slide = slides.items[i];
+          let shapes = slide.shapes;
+          let layout = slide.layout;
+          let layoutShapes = layout ? layout.shapes : null;
 
-        // Safely load shapes for slide
-        if (shapes) shapes.load("items/textFrame/textRange/font/name");
-        // Safely load shapes for layout
-        if (layoutShapes) layoutShapes.load("items/textFrame/textRange/font/name");
-        await context.sync();
+          if (shapes) shapes.load("items/textFrame/textRange/font/name");
+          if (layoutShapes) layoutShapes.load("items/textFrame/textRange/font/name");
+          await context.sync();
 
-        const fonts = new Set();
-        const layoutFonts = new Set();
+          const fonts = new Set();
+          const layoutFonts = new Set();
 
-        // SAFER: Check for shapes.items before iterating
-        if (shapes && shapes.items) {
-          for (const shape of shapes.items) {
-            if (
-              shape.textFrame &&
-              shape.textFrame.textRange &&
-              shape.textFrame.textRange.font &&
-              shape.textFrame.textRange.font.name
-            ) {
-              const font = shape.textFrame.textRange.font.name;
-              fonts.add(font);
-              usedSlideFonts.add(font);
+          if (shapes && shapes.items) {
+            for (const shape of shapes.items) {
+              if (
+                shape.textFrame &&
+                shape.textFrame.textRange &&
+                shape.textFrame.textRange.font &&
+                shape.textFrame.textRange.font.name
+              ) {
+                const font = shape.textFrame.textRange.font.name;
+                fonts.add(font);
+                usedSlideFonts.add(font);
+              }
             }
           }
+
+          if (layoutShapes && layoutShapes.items) {
+            for (const shape of layoutShapes.items) {
+              if (
+                shape.textFrame &&
+                shape.textFrame.textRange &&
+                shape.textFrame.textRange.font &&
+                shape.textFrame.textRange.font.name
+              ) {
+                const font = shape.textFrame.textRange.font.name;
+                layoutFonts.add(font);
+                usedMasterFonts.add(font);
+              }
+            }
+          }
+
+          const fontList = [...fonts];
+          fontList.forEach((font) => {
+            const isMissing = !isFontInstalled(font);
+            if (isMissing) {
+              if (!missingFonts[font]) missingFonts[font] = [];
+              missingFonts[font].push(i + 1);
+            }
+          });
+
+          const layoutFontList = [...layoutFonts];
+          layoutFontList.forEach((font) => {
+            const isMissing = !isFontInstalled(font);
+            const isUsedInSlide = usedSlideFonts.has(font);
+            if (isMissing && !isUsedInSlide) {
+              fontsMissingInMaster.add(font);
+              if (!missingFonts[font]) missingFonts[font] = [];
+              if (!missingFonts[font].includes("Master only")) {
+                missingFonts[font].push("Master only");
+              }
+            }
+          });
+        } catch (err) {
+          output += `Slide ${i + 1}: [Skipped due to error: ${err.message}]\n`;
+          console.error("Slide loop error:", err);
         }
-
-        // SAFER: Check for layoutShapes.items before iterating
-        if (layoutShapes && layoutShapes.items) {
-          for (const shape of layoutShapes.items) {
-            if (
-              shape.textFrame &&
-              shape.textFrame.textRange &&
-              shape.textFrame.textRange.font &&
-              shape.textFrame.textRange.font.name
-            ) {
-              const font = shape.textFrame.textRange.font.name;
-              layoutFonts.add(font);
-              usedMasterFonts.add(font);
-            }
-          }
-        }
-
-        const fontList = [...fonts];
-        fontList.forEach((font) => {
-          const isMissing = !isFontInstalled(font);
-          if (isMissing) {
-            if (!missingFonts[font]) missingFonts[font] = [];
-            missingFonts[font].push(i + 1);
-          }
-        });
-
-        const layoutFontList = [...layoutFonts];
-        layoutFontList.forEach((font) => {
-          const isMissing = !isFontInstalled(font);
-          const isUsedInSlide = usedSlideFonts.has(font);
-          if (isMissing && !isUsedInSlide) {
-            fontsMissingInMaster.add(font);
-            if (!missingFonts[font]) missingFonts[font] = [];
-            if (!missingFonts[font].includes("Master only")) {
-              missingFonts[font].push("Master only");
-            }
-          }
-        });
       }
 
       // Build the final output text
-      output = "";
-
+      output += "\n";
       if (usedSlideFonts.size > 0) {
         output += "=== FONTS USED IN SLIDES ===\n";
         output += [...usedSlideFonts].sort().join(", ") + "\n\n";
