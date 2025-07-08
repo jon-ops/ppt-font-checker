@@ -72,6 +72,7 @@ async function runFontChecker() {
     const usedSlideFonts = new Set();
     const usedMasterFonts = new Set();
     const fontsMissingInMaster = new Set();
+    const skippedSlides = []; // <-- Collect skipped slide numbers
 
     await PowerPoint.run(async (context) => {
       const slides = context.presentation.slides;
@@ -89,7 +90,6 @@ async function runFontChecker() {
             shapes = slide.shapes;
             if (shapes) shapes.load("items/textFrame/textRange/font/name");
           } catch (shapesErr) {
-            output += `Slide ${i + 1}: [Could not load shapes: ${shapesErr.message}]\n`;
             shapes = null;
           }
 
@@ -98,7 +98,6 @@ async function runFontChecker() {
             layoutShapes = (layout && layout.shapes) ? layout.shapes : null;
             if (layoutShapes) layoutShapes.load("items/textFrame/textRange/font/name");
           } catch (layoutErr) {
-            output += `Slide ${i + 1}: [Could not load layout shapes: ${layoutErr.message}]\n`;
             layoutShapes = null;
           }
 
@@ -159,13 +158,15 @@ async function runFontChecker() {
             }
           });
         } catch (err) {
-          output += `Slide ${i + 1}: [Skipped - not accessible by Office add-ins ${err.message}]\n`;
-          console.error("Slide loop error:", err);
+          // Just add the slide number to the skipped slides array!
+          skippedSlides.push(i + 1);
+          console.error(`Slide ${i + 1}: Skipped - not accessible by Office add-ins (${err.message})`);
         }
       }
 
-      // Build the final output text
-      output += "\n";
+      // Build the final output text (Fonts and missing fonts first)
+      output = "";
+
       if (usedSlideFonts.size > 0) {
         output += "=== FONTS USED IN SLIDES ===\n";
         output += [...usedSlideFonts].sort().join(", ") + "\n\n";
@@ -176,10 +177,18 @@ async function runFontChecker() {
         for (const font in missingFonts) {
           const where = missingFonts[font].join(", ");
           const masterNote = usedMasterFonts.has(font) ? " (Master Slides)" : "";
-          output += `❌ ${font} (Slides: ${where})${masterNote}\n`;
+          output += `❌ ${font}  (Slides: ${where})${masterNote}\n`;
         }
+        output += "\n";
       } else {
-        output += "✅ No missing fonts detected.\n";
+        output += "✅ No missing fonts detected.\n\n";
+      }
+
+      // Now list the skipped slides at the end
+      if (skippedSlides.length > 0) {
+        output += "=== SKIPPED SLIDES ===\n";
+        output += "(not accessible by Office add-ins)\n";
+        output += skippedSlides.join(", ") + "\n";
       }
     });
 
