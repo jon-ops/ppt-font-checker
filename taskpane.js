@@ -61,7 +61,7 @@ function showToast(message) {
   toast.style.display = "block";
 }
 
-async function runFontChecker() { 
+async function runFontChecker() {
   console.log("🔍 Scan Fonts button clicked");
 
   try {
@@ -76,48 +76,54 @@ async function runFontChecker() {
     await PowerPoint.run(async (context) => {
       const slides = context.presentation.slides;
       slides.load("items");
-
       await context.sync();
 
       output += `Found ${slides.items.length} slide(s).\n\n`;
 
       for (let i = 0; i < slides.items.length; i++) {
         const slide = slides.items[i];
-        const shapes = slide.shapes;
-        const layout = slide.layout;
-        const layoutShapes = layout.shapes;
+        let shapes = slide.shapes;
+        let layout = slide.layout;
+        let layoutShapes = layout ? layout.shapes : null;
 
-        shapes.load("items/textFrame/textRange/font/name");
-        layoutShapes.load("items/textFrame/textRange/font/name");
-
+        // Safely load shapes for slide
+        if (shapes) shapes.load("items/textFrame/textRange/font/name");
+        // Safely load shapes for layout
+        if (layoutShapes) layoutShapes.load("items/textFrame/textRange/font/name");
         await context.sync();
 
         const fonts = new Set();
         const layoutFonts = new Set();
 
-        for (const shape of shapes.items) {
-          if (
-            shape.textFrame &&
-            shape.textFrame.textRange &&
-            shape.textFrame.textRange.font &&
-            shape.textFrame.textRange.font.name
-          ) {
-            const font = shape.textFrame.textRange.font.name;
-            fonts.add(font);
-            usedSlideFonts.add(font);
+        // SAFER: Check for shapes.items before iterating
+        if (shapes && shapes.items) {
+          for (const shape of shapes.items) {
+            if (
+              shape.textFrame &&
+              shape.textFrame.textRange &&
+              shape.textFrame.textRange.font &&
+              shape.textFrame.textRange.font.name
+            ) {
+              const font = shape.textFrame.textRange.font.name;
+              fonts.add(font);
+              usedSlideFonts.add(font);
+            }
           }
         }
 
-        for (const shape of layoutShapes.items) {
-          if (
-            shape.textFrame &&
-            shape.textFrame.textRange &&
-            shape.textFrame.textRange.font &&
-            shape.textFrame.textRange.font.name
-          ) {
-            const font = shape.textFrame.textRange.font.name;
-            layoutFonts.add(font);
-            usedMasterFonts.add(font);
+        // SAFER: Check for layoutShapes.items before iterating
+        if (layoutShapes && layoutShapes.items) {
+          for (const shape of layoutShapes.items) {
+            if (
+              shape.textFrame &&
+              shape.textFrame.textRange &&
+              shape.textFrame.textRange.font &&
+              shape.textFrame.textRange.font.name
+            ) {
+              const font = shape.textFrame.textRange.font.name;
+              layoutFonts.add(font);
+              usedMasterFonts.add(font);
+            }
           }
         }
 
