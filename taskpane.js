@@ -83,12 +83,25 @@ async function runFontChecker() {
       for (let i = 0; i < slides.items.length; i++) {
         try {
           const slide = slides.items[i];
-          let shapes = slide.shapes;
-          let layout = slide.layout;
-          let layoutShapes = layout ? layout.shapes : null;
+          let shapes, layout, layoutShapes;
 
-          if (shapes) shapes.load("items/textFrame/textRange/font/name");
-          if (layoutShapes) layoutShapes.load("items/textFrame/textRange/font/name");
+          try {
+            shapes = slide.shapes;
+            if (shapes) shapes.load("items/textFrame/textRange/font/name");
+          } catch (shapesErr) {
+            output += `Slide ${i + 1}: [Could not load shapes: ${shapesErr.message}]\n`;
+            shapes = null;
+          }
+
+          try {
+            layout = slide.layout;
+            layoutShapes = (layout && layout.shapes) ? layout.shapes : null;
+            if (layoutShapes) layoutShapes.load("items/textFrame/textRange/font/name");
+          } catch (layoutErr) {
+            output += `Slide ${i + 1}: [Could not load layout shapes: ${layoutErr.message}]\n`;
+            layoutShapes = null;
+          }
+
           await context.sync();
 
           const fonts = new Set();
