@@ -8,6 +8,69 @@
   <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
   <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css" />
   <link href="taskpane.css" rel="stylesheet" type="text/css" />
+  <!-- Your custom dark style below -->
+  <style>
+   body, .main {
+  background: #343E48 !important;
+  color: #F2F7F9 !important;
+}
+h1, h2, h3, h4, h5, h6, p {
+  color: #F2F7F9;
+}
+button, .ms-Button {
+  background: #2EAEE0 !important;
+  color: #343E48 !important;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 10px 0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+button:hover, .ms-Button:hover {
+  background: #F2F7F9 !important;
+  color: #2EAEE0 !important;
+  border: 1px solid #2EAEE0;
+}
+.heading {
+  font-size: 1.1em;
+  margin-top: 20px;
+  color: #2EAEE0;
+}
+.success {
+  color: #2EAEE0;
+}
+.missing.font-line {
+  color: #FF0303;
+  font-weight: bold;
+}
+.copyable {
+  text-decoration: underline;
+  cursor: pointer;
+}
+#output {
+  background: #23282f;
+  color: #F2F7F9;
+  border-radius: 8px;
+  padding: 18px 18px 18px 18px;
+  min-height: 70px;
+  margin-top: 18px;
+  word-break: break-word;
+  font-size: 1.1em;
+}
+#toast {
+  background: #2EAEE0 !important;
+  color: #343E48 !important;
+  border-radius: 8px;
+  padding: 12px 22px;
+  font-size: 1em;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+  </style>
 </head>
 <body class="ms-font-m ms-Fabric">
   <div class="main" style="padding: 20px;">
