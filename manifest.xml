@@ -7,10 +7,10 @@
 
   <Id>7c1d4b5c-165b-4582-a0da-a253412d5e37</Id>
   <Version>1.0.0.0</Version>
-  <ProviderName>Font Checker</ProviderName>
+  <ProviderName>Jon Flynn</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
 
-  <DisplayName DefaultValue="PowerPoint Font Checker"/>
+  <DisplayName DefaultValue="Font Checker for PowerPoint"/>
   <Description DefaultValue="Scan your PowerPoint slides and masters to identify missing fonts."/>
 
   <IconUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-32.png"/>
@@ -55,7 +55,7 @@
         <bt:Url id="Contoso.GetStarted.LearnMoreUrl" DefaultValue="https://github.com/jon-ops/ppt-font-checker"/>
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="Contoso.Taskpane.Title" DefaultValue="Font Checker"/>
+        <bt:String id="Contoso.Taskpane.Title" DefaultValue="Font Checker for PowerPoint"/>
         <bt:String id="Contoso.GetStarted.Title" DefaultValue="Check Missing Fonts"/>
       </bt:ShortStrings>
       <bt:LongStrings>
