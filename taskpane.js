@@ -159,7 +159,7 @@ async function runFontChecker() {
             }
           });
         } catch (err) {
-          output += `Slide ${i + 1}: [Skipped due to error: ${err.message}]\n`;
+          output += `Slide ${i + 1}: [Skipped - not accessible by Office add-ins ${err.message}]\n`;
           console.error("Slide loop error:", err);
         }
       }
