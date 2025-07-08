@@ -1,131 +1,35 @@
-<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. -->
-<!-- This file shows how to design a first-run page that provides a welcome screen to the user about the features of the add-in. -->
-
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PowerPoint Font Checker</title>
+  <title>Font Checker for PowerPoint</title>
 
-  <!-- ✅ Office JS with crossorigin fix -->
-  <script
-    type="text/javascript"
-    src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"
-    crossorigin="anonymous"
-  ></script>
+  <!-- Office JavaScript API -->
+  <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
 
-  <!-- ✅ Optional UI framework (Fluent UI) -->
-  <link
-    rel="stylesheet"
-    href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.002/office-ui-fabric-core/11.1.0/css/fabric.min.css"
-  />
+  <!-- Fluent UI Core -->
+  <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css" />
 
-  <!-- ❌ Removed broken taskpane.css -->
-
-  <style>
-    body {
-      background-color: #1e1e2f;
-      color: #f0f0f0;
-      font-family: "Segoe UI", sans-serif;
-      padding: 16px;
-    }
-
-    h2 {
-      color: #ffffff;
-      margin-bottom: 0.5em;
-    }
-
-    #scan-fonts,
-    #copy-btn {
-      background-color: #2c2c3c;
-      color: #f0f0f0;
-      border: 1px solid #444;
-      border-radius: 4px;
-      padding: 8px 12px;
-      margin-top: 10px;
-      font-size: 0.95em;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    #scan-fonts:hover,
-    #copy-btn:hover {
-      background-color: #3e3e5a;
-    }
-
-    .copyable {
-      cursor: pointer;
-      text-decoration: underline;
-      color: #91c4ff;
-      transition: color 0.2s;
-    }
-
-    .copyable:hover {
-      color: #ffffff;
-    }
-
-    pre,
-    #output {
-      font-family: Consolas, monospace;
-      font-size: 0.9em;
-      margin-top: 1em;
-      white-space: pre-wrap;
-    }
-
-    .heading {
-      color: #bbbbff;
-      font-weight: bold;
-      margin-top: 1em;
-    }
-
-    .missing {
-      color: #ff5c5c;
-    }
-
-    .success {
-      color: #a5f28c;
-    }
-
-    .font-line {
-      margin-left: 1.2em;
-      line-height: 1.5;
-    }
-
-    #toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #323232;
-      color: #fff;
-      padding: 10px 18px;
-      border-radius: 6px;
-      font-size: 0.9em;
-      z-index: 9999;
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-
-    #toast.show {
-      display: block;
-      opacity: 1;
-    }
-  </style>
+  <!-- Custom styles -->
+  <link href="taskpane.css" rel="stylesheet" type="text/css" />
 </head>
+<body class="ms-font-m ms-Fabric">
+  <div class="main" style="padding: 20px;">
+    <h1 class="ms-font-xxl">Font Checker</h1>
+    <p class="ms-font-l">Click below to scan your PowerPoint for fonts used and missing fonts.</p>
 
-<body>
-  <div id="app-body" style="display: flex; flex-direction: column;">
-    <h2>PowerPoint Font Checker</h2>
-    <button id="scan-fonts">🔍 Scan Fonts</button>
-    <button id="copy-btn" style="display: none;">📋 Copy Missing Fonts</button>
-    <pre id="output"></pre>
+    <!-- Corrected button -->
+    <button id="scan-fonts" class="ms-Button ms-Button--primary">
+      <span class="ms-Button-label">Scan Fonts</span>
+    </button>
+
+    <!-- Corrected output div -->
+    <div id="output" style="margin-top: 20px;" class="ms-font-m"></div>
   </div>
 
-  <div id="toast" style="display: none;"></div>
-
-  <!-- ✅ Load your main JS here -->
+  <!-- Load custom script -->
   <script src="taskpane.js"></script>
 </body>
 </html>
