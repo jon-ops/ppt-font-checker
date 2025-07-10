@@ -1,63 +1,67 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" xmlns:ns3="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="TaskPaneApp">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
+           xsi:type="TaskPaneApp">
 
   <Id>7c1d4b5c-165b-4582-a0da-a253412d5e37</Id>
   <Version>1.0.0.0</Version>
   <ProviderName>Jon Flynn</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
 
-  <Hosts><Host Name="Presentation" /></Hosts><Requirements><bt:Sets DefaultMinVersion="1.1"><bt:Set Name="Presentation" MinVersion="1.1" /></bt:Sets></Requirements><DisplayName DefaultValue="Font Checker for PowerPoint" />
-  <Description DefaultValue="Scan your PowerPoint slides and masters to identify missing fonts." />
+  <DisplayName DefaultValue="Font Checker for PowerPoint"/>
+  <Description DefaultValue="Scan your PowerPoint slides and masters to identify missing fonts."/>
 
-  <IconUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-32.png" />
-  <HighResolutionIconUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-64.png" />
+  <IconUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-64.png"/>
 
-  <SupportUrl DefaultValue="https://github.com/jon-ops/ppt-font-checker" />
+  <SupportUrl DefaultValue="https://github.com/jon-ops/ppt-font-checker"/>
 
   <Hosts>
-    <Host Name="Presentation" />
+    <Host Name="Presentation"/>
   </Hosts>
 
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://jon-ops.github.io/ppt-font-checker/taskpane.html" />
+    <SourceLocation DefaultValue="https://jon-ops.github.io/ppt-font-checker/taskpane.html"/>
   </DefaultSettings>
 
   <Permissions>ReadWriteDocument</Permissions>
 
-  <ns3:VersionOverrides xsi:type="VersionOverridesV1_0">
-    <ns3:Hosts>
-      <ns3:Host xsi:type="Presentation">
-        <ns3:DesktopFormFactor>
-          <ns3:GetStarted>
-            <ns3:Title resid="Contoso.GetStarted.Title" />
-            <ns3:Description resid="Contoso.GetStarted.Description" />
-            <ns3:LearnMoreUrl resid="Contoso.GetStarted.LearnMoreUrl" />
-          </ns3:GetStarted>
-          <ns3:ExtensionPoint xsi:type="TasksPane">
-            <ns3:SourceLocation resid="Contoso.Taskpane.Url" />
-            <ns3:Title resid="Contoso.Taskpane.Title" />
-            <ns3:RequestedHeight>300</ns3:RequestedHeight>
-          </ns3:ExtensionPoint>
-        </ns3:DesktopFormFactor>
-      </ns3:Host>
-    </ns3:Hosts>
-    <ns3:Resources>
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Presentation">
+        <DesktopFormFactor>
+          <GetStarted>
+            <Title resid="Contoso.GetStarted.Title"/>
+            <Description resid="Contoso.GetStarted.Description"/>
+            <LearnMoreUrl resid="Contoso.GetStarted.LearnMoreUrl"/>
+          </GetStarted>
+          <ExtensionPoint xsi:type="TasksPane">
+            <SourceLocation resid="Contoso.Taskpane.Url"/>
+            <Title resid="Contoso.Taskpane.Title"/>
+            <RequestedHeight>300</RequestedHeight>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+    <Resources>
       <bt:Images>
-        <bt:Image id="icon32" DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-32.png" />
-        <bt:Image id="icon64" DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-64.png" />
+        <bt:Image id="icon32" DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-32.png"/>
+        <bt:Image id="icon64" DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-64.png"/>
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="Contoso.Taskpane.Url" DefaultValue="https://jon-ops.github.io/ppt-font-checker/taskpane.html" />
-        <bt:Url id="Contoso.GetStarted.LearnMoreUrl" DefaultValue="https://github.com/jon-ops/ppt-font-checker" />
+        <bt:Url id="Contoso.Taskpane.Url" DefaultValue="https://jon-ops.github.io/ppt-font-checker/taskpane.html"/>
+        <bt:Url id="Contoso.GetStarted.LearnMoreUrl" DefaultValue="https://github.com/jon-ops/ppt-font-checker"/>
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="Contoso.Taskpane.Title" DefaultValue="Font Checker for PowerPoint" />
-        <bt:String id="Contoso.GetStarted.Title" DefaultValue="Check Missing Fonts" />
+        <bt:String id="Contoso.Taskpane.Title" DefaultValue="Font Checker for PowerPoint"/>
+        <bt:String id="Contoso.GetStarted.Title" DefaultValue="Check Missing Fonts"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="Contoso.GetStarted.Description" DefaultValue="Scan slides and master layouts to detect missing fonts." />
+        <bt:String id="Contoso.GetStarted.Description" DefaultValue="Scan slides and master layouts to detect missing fonts."/>
       </bt:LongStrings>
-    </ns3:Resources>
-  </ns3:VersionOverrides>
+    </Resources>
+  </VersionOverrides>
 
 </OfficeApp>
