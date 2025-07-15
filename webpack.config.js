@@ -14,26 +14,34 @@ async function getHttpsOptions() {
 
 module.exports = async (env, options) => {
   const dev = options.mode === "development";
+
+  // Single config object, with mode & stats at the top:
   const config = {
+    mode: dev ? "development" : "production",    // ← no more "mode" warning
+    stats: {
+      errorDetails: true,                        // ← full error dumps
+    },
+
     devtool: "source-map",
     entry: {
       polyfill: ["core-js/stable", "regenerator-runtime/runtime"],
-      taskpane: ["./src/taskpane/taskpane.js", "./src/taskpane/taskpane.html"],
-      commands: "./src/commands/commands.js",
+      taskpane: ["./src/taskpane/taskpane.ts", "./src/taskpane/taskpane.html"],
+      commands: "./src/commands/commands.ts",
     },
     output: {
       clean: true,
     },
     resolve: {
-      extensions: [".html", ".js"],
+      extensions: [".ts", ".html", ".js"],
     },
     module: {
       rules: [
         {
-          test: /\.js$/,
+          test: /\.ts$/,
           exclude: /node_modules/,
           use: {
             loader: "babel-loader",
+            options: { presets: ["@babel/preset-typescript"] },
           },
         },
         {
@@ -44,9 +52,7 @@ module.exports = async (env, options) => {
         {
           test: /\.(png|jpg|jpeg|gif|ico)$/,
           type: "asset/resource",
-          generator: {
-            filename: "assets/[name][ext][query]",
-          },
+          generator: { filename: "assets/[name][ext][query]" },
         },
       ],
     },
@@ -58,19 +64,14 @@ module.exports = async (env, options) => {
       }),
       new CopyWebpackPlugin({
         patterns: [
+          { from: "assets/*", to: "assets/[name][ext][query]" },
           {
-            from: "assets/*",
-            to: "assets/[name][ext][query]",
-          },
-          {
-            from: "manifest*.xml",
-            to: "[name]" + "[ext]",
+            from: "manifest*.json",
+            to: "[name][ext]",
             transform(content) {
-              if (dev) {
-                return content;
-              } else {
-                return content.toString().replace(new RegExp(urlDev, "g"), urlProd);
-              }
+              return dev
+                ? content
+                : content.toString().replace(new RegExp(urlDev, "g"), urlProd);
             },
           },
         ],
@@ -82,12 +83,13 @@ module.exports = async (env, options) => {
       }),
     ],
     devServer: {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      },
+      headers: { "Access-Control-Allow-Origin": "*" },
       server: {
         type: "https",
-        options: env.WEBPACK_BUILD || options.https !== undefined ? options.https : await getHttpsOptions(),
+        options:
+          env.WEBPACK_BUILD || options.https !== undefined
+            ? options.https
+            : await getHttpsOptions(),
       },
       port: process.env.npm_package_config_dev_server_port || 3000,
     },
