@@ -34,5 +34,37 @@
   </DefaultSettings>
 
   <Permissions>ReadWriteDocument</Permissions>
+  <!-- Minimal Task‑pane override -->
+  <VersionOverrides
+    xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
+    xsi:type="VersionOverridesV1_0">
+
+    <Hosts>
+      <Host xsi:type="Presentation">
+        <DesktopFormFactor>
+          <ExtensionPoint xsi:type="TasksPane">
+            <SourceLocation resid="Contoso.Taskpane.Url"/>
+            <Title       resid="Contoso.Taskpane.Title"/>
+            <RequestedHeight>300</RequestedHeight>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+
+    <Resources>
+      <bt:Images>
+        <bt:Image id="icon32" DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-32.png"/>
+        <bt:Image id="icon64" DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-64.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="Contoso.Taskpane.Url"           DefaultValue="https://jon-ops.github.io/ppt-font-checker/taskpane.html"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="Contoso.Taskpane.Title"      DefaultValue="Font Checker for PowerPoint"/>
+      </bt:ShortStrings>
+      <!-- Omit optional GetStarted, LongStrings, etc. -->
+    </Resources>
+
+  </VersionOverrides>
 
 </OfficeApp>
