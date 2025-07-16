@@ -44,11 +44,13 @@
     <Hosts>
       <Host xsi:type="Presentation">
         <DesktopFormFactor>
-          <GetStarted>
-            <Title resid="Contoso.GetStarted.Title"/>
-            <Description resid="Contoso.GetStarted.Description"/>
-            <LearnMoreUrl resid="Contoso.GetStarted.LearnMoreUrl"/>
-          </GetStarted>
+          <!--
+      <GetStarted>
+        <Title resid="Contoso.GetStarted.Title"/>
+        <Description resid="Contoso.GetStarted.Description"/>
+        <LearnMoreUrl resid="Contoso.GetStarted.LearnMoreUrl"/>
+      </GetStarted>
+      -->
           <ExtensionPoint xsi:type="TasksPane">
             <SourceLocation resid="Contoso.Taskpane.Url"/>
             <Title resid="Contoso.Taskpane.Title"/>
