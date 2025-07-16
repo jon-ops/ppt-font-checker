@@ -36,48 +36,4 @@
 
   <Permissions>ReadWriteDocument</Permissions>
 
-  <!-- Task‑pane override -->
-  <VersionOverrides
-    xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
-    xsi:type="VersionOverridesV1_0">
-
-    <Hosts>
-      <Host xsi:type="Presentation">
-        <DesktopFormFactor>
-          <!--
-      <GetStarted>
-        <Title resid="Contoso.GetStarted.Title"/>
-        <Description resid="Contoso.GetStarted.Description"/>
-        <LearnMoreUrl resid="Contoso.GetStarted.LearnMoreUrl"/>
-      </GetStarted>
-      -->
-          <ExtensionPoint xsi:type="TasksPane">
-            <SourceLocation resid="Contoso.Taskpane.Url"/>
-            <Title resid="Contoso.Taskpane.Title"/>
-            <RequestedHeight>300</RequestedHeight>
-          </ExtensionPoint>
-        </DesktopFormFactor>
-      </Host>
-    </Hosts>
-
-    <Resources>
-      <bt:Images>
-        <bt:Image id="icon32" DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-32.png"/>
-        <bt:Image id="icon64" DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-64.png"/>
-      </bt:Images>
-      <bt:Urls>
-        <bt:Url id="Contoso.Taskpane.Url" DefaultValue="https://jon-ops.github.io/ppt-font-checker/taskpane.html"/>
-        <bt:Url id="Contoso.GetStarted.LearnMoreUrl" DefaultValue="https://github.com/jon-ops/ppt-font-checker"/>
-      </bt:Urls>
-      <bt:ShortStrings>
-        <bt:String id="Contoso.Taskpane.Title" DefaultValue="Font Checker for PowerPoint"/>
-        <bt:String id="Contoso.GetStarted.Title" DefaultValue="Check Missing Fonts"/>
-      </bt:ShortStrings>
-      <bt:LongStrings>
-        <bt:String id="Contoso.GetStarted.Description" DefaultValue="Scan slides and master layouts to detect missing fonts."/>
-      </bt:LongStrings>
-    </Resources>
-
-  </VersionOverrides>
-
 </OfficeApp>
