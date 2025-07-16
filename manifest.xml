@@ -3,10 +3,9 @@
   xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
-  xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
   xsi:type="TaskPaneApp">
 
-  <!-- Required metadata -->
+  <!-- Core metadata -->
   <Id>7c1d4b5c-165b-4582-a0da-a253412d5e37</Id>
   <Version>1.0.0.0</Version>
   <ProviderName>Jon Flynn</ProviderName>
@@ -20,7 +19,7 @@
 
   <SupportUrl DefaultValue="https://github.com/jon-ops/ppt-font-checker"/>
 
-  <!-- Domains you’ll navigate to -->
+  <!-- Your task‑pane host domain -->
   <AppDomains>
     <AppDomain>https://jon-ops.github.io</AppDomain>
   </AppDomains>
@@ -34,37 +33,5 @@
   </DefaultSettings>
 
   <Permissions>ReadWriteDocument</Permissions>
-  <!-- Minimal Task‑pane override -->
-  <VersionOverrides
-    xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
-    xsi:type="VersionOverridesV1_0">
-
-    <Hosts>
-      <Host xsi:type="Presentation">
-        <DesktopFormFactor>
-          <ExtensionPoint xsi:type="TasksPane">
-            <SourceLocation resid="Contoso.Taskpane.Url"/>
-            <Title       resid="Contoso.Taskpane.Title"/>
-            <RequestedHeight>300</RequestedHeight>
-          </ExtensionPoint>
-        </DesktopFormFactor>
-      </Host>
-    </Hosts>
-
-    <Resources>
-      <bt:Images>
-        <bt:Image id="icon32" DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-32.png"/>
-        <bt:Image id="icon64" DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-64.png"/>
-      </bt:Images>
-      <bt:Urls>
-        <bt:Url id="Contoso.Taskpane.Url"           DefaultValue="https://jon-ops.github.io/ppt-font-checker/taskpane.html"/>
-      </bt:Urls>
-      <bt:ShortStrings>
-        <bt:String id="Contoso.Taskpane.Title"      DefaultValue="Font Checker for PowerPoint"/>
-      </bt:ShortStrings>
-      <!-- Omit optional GetStarted, LongStrings, etc. -->
-    </Resources>
-
-  </VersionOverrides>
 
 </OfficeApp>
