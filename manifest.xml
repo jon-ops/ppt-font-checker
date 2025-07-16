@@ -19,7 +19,6 @@
   <HighResolutionIconUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-64.png"/>
 
   <SupportUrl DefaultValue="https://github.com/jon-ops/ppt-font-checker"/>
-  <PrivacyStatementUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/privacy.html"/>
 
   <!-- Domains you’ll navigate to -->
   <AppDomains>
