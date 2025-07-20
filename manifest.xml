@@ -17,7 +17,7 @@
   <IconUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/assets/icon-64.png"/>
 
-  <SupportUrl DefaultValue="https://github.com/jon-ops/ppt-font-checker"/>
+ <SupportUrl DefaultValue="https://jon-ops.github.io/ppt-font-checker/support.html"/>
 
   <!-- Your task‑pane host domain -->
   <AppDomains>
