@@ -8,7 +8,7 @@
   <!-- Core metadata -->
   <Id>7c1d4b5c-165b-4582-a0da-a253412d5e37</Id>
   <Version>1.0.0.0</Version>
-  <ProviderName>Jon Flynn</ProviderName>
+  <ProviderName>PowerPoint Notes Manager</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
 
   <DisplayName DefaultValue="Font Checker for PowerPoint"/>
