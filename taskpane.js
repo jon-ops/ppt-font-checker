@@ -269,3 +269,6 @@ async function runFontChecker() {
       "Error: " + (error.message || error.toString());
   }
 }
+
+
+window.runFontChecker = runFontChecker;
