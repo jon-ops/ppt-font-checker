@@ -29,6 +29,7 @@ function copyToClipboard(text) {
   });
 }
 
+
 function isFontInstalled(fontName) {
   const testString = "mmmmmmmmmmlli";
   const testSize = "72px";
@@ -71,7 +72,13 @@ async function runFontChecker() {
     const usedSlideFonts = new Set();
     const usedMasterFonts = new Set();
     const fontsMissingInMaster = new Set();
-    const skippedSlides = []; // <-- Collect skipped slide numbers
+    const skippedSlides = [];
+
+    // Helper to decide if a shape is an image/picture
+    const isPicture = (shape) => {
+      const t = (shape && (shape.type || shape.shapeType)) || "";
+      return /image|picture/i.test(String(t));
+    };
 
     await PowerPoint.run(async (context) => {
       const slides = context.presentation.slides;
@@ -83,65 +90,90 @@ async function runFontChecker() {
       for (let i = 0; i < slides.items.length; i++) {
         try {
           const slide = slides.items[i];
-          let shapes, layout, layoutShapes;
+          let shapes = null;
+          let layout = null;
+          let layoutShapes = null;
 
-          // Load shapes with type and font info
-          shapes = slide.shapes;
-          if (shapes) shapes.load("items/type,items/textFrame/textRange/font/name");
+          try {
+            shapes = slide.shapes;
+            if (shapes) {
+              // load shape type as well as font name so we can skip images
+              shapes.load("items/type,items/shapeType,items/textFrame/textRange/font/name");
+            }
+          } catch (shapesErr) {
+            console.warn(`Slide ${i + 1}: couldn't load shapes (${shapesErr.message})`);
+            shapes = null;
+          }
 
-          // Load layout (master) shapes with type and font info
-          layout = slide.layout;
-          layoutShapes = layout && layout.shapes;
-          if (layoutShapes) layoutShapes.load("items/type,items/textFrame/textRange/font/name");
+          try {
+            layout = slide.layout;
+            layoutShapes = layout && layout.shapes ? layout.shapes : null;
+            if (layoutShapes) {
+              layoutShapes.load("items/type,items/shapeType,items/textFrame/textRange/font/name");
+            }
+          } catch (layoutErr) {
+            console.warn(`Slide ${i + 1}: couldn't load layout shapes (${layoutErr.message})`);
+            layoutShapes = null;
+          }
 
           await context.sync();
 
           const fonts = new Set();
           const layoutFonts = new Set();
 
-          // Filter out pictures from slide shapes
+          // Slide shapes
           if (shapes && shapes.items) {
-            const nonPic = shapes.items.filter(s => s.type !== PowerPoint.ShapeType.Picture && s.type !== "Picture");
-            for (const shape of nonPic) {
-              if (
-                shape.textFrame &&
-                shape.textFrame.textRange &&
-                shape.textFrame.textRange.font &&
-                shape.textFrame.textRange.font.name
-              ) {
-                const font = shape.textFrame.textRange.font.name;
-                fonts.add(font);
-                usedSlideFonts.add(font);
+            for (const shape of shapes.items) {
+              try {
+                if (isPicture(shape)) continue;
+
+                if (
+                  shape.textFrame &&
+                  shape.textFrame.textRange &&
+                  shape.textFrame.textRange.font &&
+                  shape.textFrame.textRange.font.name
+                ) {
+                  const font = shape.textFrame.textRange.font.name;
+                  fonts.add(font);
+                  usedSlideFonts.add(font);
+                }
+              } catch (shapeErr) {
+                console.warn(`Slide ${i + 1}: shape skipped (${shapeErr.message})`);
               }
             }
           }
 
-          // Filter out pictures from master layout shapes
+          // Layout (master) shapes
           if (layoutShapes && layoutShapes.items) {
-            const nonPicLayout = layoutShapes.items.filter(s => s.type !== PowerPoint.ShapeType.Picture && s.type !== "Picture");
-            for (const shape of nonPicLayout) {
-              if (
-                shape.textFrame &&
-                shape.textFrame.textRange &&
-                shape.textFrame.textRange.font &&
-                shape.textFrame.textRange.font.name
-              ) {
-                const font = shape.textFrame.textRange.font.name;
-                layoutFonts.add(font);
-                usedMasterFonts.add(font);
+            for (const shape of layoutShapes.items) {
+              try {
+                if (isPicture(shape)) continue;
+
+                if (
+                  shape.textFrame &&
+                  shape.textFrame.textRange &&
+                  shape.textFrame.textRange.font &&
+                  shape.textFrame.textRange.font.name
+                ) {
+                  const font = shape.textFrame.textRange.font.name;
+                  layoutFonts.add(font);
+                  usedMasterFonts.add(font);
+                }
+              } catch (shapeErr) {
+                console.warn(`Slide ${i + 1}: layout shape skipped (${shapeErr.message})`);
               }
             }
           }
 
-          // Check slide fonts for missing
+          // Check missing
           for (const font of fonts) {
-            if (!isFontInstalled(font)) {
+            const isMissing = !isFontInstalled(font);
+            if (isMissing) {
               if (!missingFonts[font]) missingFonts[font] = [];
               missingFonts[font].push(i + 1);
             }
           }
 
-          // Check master fonts for missing where not used on slide
           for (const font of layoutFonts) {
             const isMissing = !isFontInstalled(font);
             const isUsedInSlide = usedSlideFonts.has(font);
@@ -153,10 +185,15 @@ async function runFontChecker() {
               }
             }
           }
-
         } catch (err) {
-          skippedSlides.push(i + 1);
-          console.error(`Slide ${i + 1}: Skipped - not accessible by Office add-ins (${err.message})`);
+          const msg = (err && err.message) || "";
+          // Only truly skip if Office blocks the slide
+          if (/not accessible/i.test(msg) || err.code === "AccessDenied") {
+            skippedSlides.push(i + 1);
+            console.error(`Slide ${i + 1}: Skipped - not accessible by Office add-ins (${msg})`);
+          } else {
+            console.warn(`Slide ${i + 1}: non-fatal error, continuing. (${msg})`);
+          }
         }
       }
 
@@ -180,7 +217,6 @@ async function runFontChecker() {
         output += "✅ No missing fonts detected.\n\n";
       }
 
-      // Now list the skipped slides at the end
       if (skippedSlides.length > 0) {
         output += "=== SKIPPED SLIDES ===\n";
         output += "(not accessible by Office add-ins)\n";
@@ -195,7 +231,7 @@ async function runFontChecker() {
     outputElement.innerHTML = "";
     copyBtn.style.display = "none";
 
-    let missingFontList = [];
+    const missingFontList = [];
 
     output.split("\n").forEach((line) => {
       const div = document.createElement("div");
@@ -248,4 +284,3 @@ async function runFontChecker() {
       "Error: " + (error.message || error.toString());
   }
 }
-window.runFontChecker = runFontChecker;
