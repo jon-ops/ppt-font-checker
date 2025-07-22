@@ -74,12 +74,6 @@ async function runFontChecker() {
     const fontsMissingInMaster = new Set();
     const skippedSlides = [];
 
-    // Helper to decide if a shape is an image/picture
-    const isPicture = (shape) => {
-      const t = (shape && (shape.type || shape.shapeType)) || "";
-      return /image|picture/i.test(String(t));
-    };
-
     await PowerPoint.run(async (context) => {
       const slides = context.presentation.slides;
       slides.load("items");
@@ -91,26 +85,21 @@ async function runFontChecker() {
         try {
           const slide = slides.items[i];
           let shapes = null;
-          let layout = null;
           let layoutShapes = null;
 
+          // --- Load just the font paths; older APIs choke on "type"/"shapeType"
           try {
             shapes = slide.shapes;
-            if (shapes) {
-              // load shape type as well as font name so we can skip images
-              shapes.load("items/type,items/shapeType,items/textFrame/textRange/font/name");
-            }
+            if (shapes) shapes.load("items/textFrame/textRange/font/name");
           } catch (shapesErr) {
             console.warn(`Slide ${i + 1}: couldn't load shapes (${shapesErr.message})`);
             shapes = null;
           }
 
           try {
-            layout = slide.layout;
+            const layout = slide.layout;
             layoutShapes = layout && layout.shapes ? layout.shapes : null;
-            if (layoutShapes) {
-              layoutShapes.load("items/type,items/shapeType,items/textFrame/textRange/font/name");
-            }
+            if (layoutShapes) layoutShapes.load("items/textFrame/textRange/font/name");
           } catch (layoutErr) {
             console.warn(`Slide ${i + 1}: couldn't load layout shapes (${layoutErr.message})`);
             layoutShapes = null;
@@ -121,12 +110,11 @@ async function runFontChecker() {
           const fonts = new Set();
           const layoutFonts = new Set();
 
-          // Slide shapes
+          // --- Slide shapes
           if (shapes && shapes.items) {
             for (const shape of shapes.items) {
               try {
-                if (isPicture(shape)) continue;
-
+                // Pictures won't have a textFrame, so this guard also "skips images"
                 if (
                   shape.textFrame &&
                   shape.textFrame.textRange &&
@@ -143,12 +131,10 @@ async function runFontChecker() {
             }
           }
 
-          // Layout (master) shapes
+          // --- Layout (master) shapes
           if (layoutShapes && layoutShapes.items) {
             for (const shape of layoutShapes.items) {
               try {
-                if (isPicture(shape)) continue;
-
                 if (
                   shape.textFrame &&
                   shape.textFrame.textRange &&
@@ -165,15 +151,15 @@ async function runFontChecker() {
             }
           }
 
-          // Check missing
+          // --- Check slide fonts
           for (const font of fonts) {
-            const isMissing = !isFontInstalled(font);
-            if (isMissing) {
+            if (!isFontInstalled(font)) {
               if (!missingFonts[font]) missingFonts[font] = [];
               missingFonts[font].push(i + 1);
             }
           }
 
+          // --- Check layout-only fonts
           for (const font of layoutFonts) {
             const isMissing = !isFontInstalled(font);
             const isUsedInSlide = usedSlideFonts.has(font);
@@ -187,8 +173,7 @@ async function runFontChecker() {
           }
         } catch (err) {
           const msg = (err && err.message) || "";
-          // Only truly skip if Office blocks the slide
-          if (/not accessible/i.test(msg) || err.code === "AccessDenied") {
+          if (/not accessible/i.test(msg) || err?.code === "AccessDenied") {
             skippedSlides.push(i + 1);
             console.error(`Slide ${i + 1}: Skipped - not accessible by Office add-ins (${msg})`);
           } else {
@@ -197,7 +182,7 @@ async function runFontChecker() {
         }
       }
 
-      // Build the final output text (Fonts and missing fonts first)
+      // --- Build output
       output = "";
 
       if (usedSlideFonts.size > 0) {
