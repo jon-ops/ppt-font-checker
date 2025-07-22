@@ -1,22 +1,20 @@
 /* global document, Office, PowerPoint */
 
-Office.onReady((info) => {
-  if (info.host === Office.HostType.PowerPoint) {
-    console.log("✅ Office is ready in PowerPoint");
-
-    const sideload = document.getElementById("sideload-msg");
-    if (sideload) sideload.style.display = "none";
-
-    const appBody = document.getElementById("app-body");
-    if (appBody) appBody.style.display = "flex";
-
+Office.onReady(() => {
+  const wireUp = () => {
     const scanBtn = document.getElementById("scan-fonts");
-    if (scanBtn) {
-      scanBtn.onclick = runFontChecker;
-      console.log("✅ Scan Fonts button is wired up");
-    } else {
-      console.log("❌ Scan Fonts button not found");
+    if (!scanBtn) {
+      console.error("❌ scan-fonts button not found");
+      return;
     }
+    scanBtn.onclick = runFontChecker;
+    console.log("✅ Scan button wired");
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", wireUp);
+  } else {
+    wireUp();
   }
 });
 
