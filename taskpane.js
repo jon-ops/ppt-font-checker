@@ -1,5 +1,23 @@
 /* global document, Office, PowerPoint */
 
+//////////////////////////////////////////
+// GLOBAL ERROR DUMPER (shows in pane)
+//////////////////////////////////////////
+function crash(err) {
+  const out = document.getElementById("output");
+  if (out) {
+    out.style.whiteSpace = "pre-wrap";
+    const msg = (err && err.message) || String(err);
+    const stack = (err && err.stack) || "";
+    out.textContent = "⚠️ Error scanning fonts:\n\n" + msg + "\n\n" + stack;
+  }
+  console.error(err);
+}
+window.addEventListener("error", (e) => crash(e.error || e.message));
+window.addEventListener("unhandledrejection", (e) => crash(e.reason || e));
+
+//////////////////////////////////////////
+
 Office.onReady((info) => {
   if (info.host === Office.HostType.PowerPoint) {
     console.log("✅ Office is ready in PowerPoint");
@@ -35,18 +53,16 @@ function isFontInstalled(fontName) {
     const testString = "mmmmmmmmmmlli";
     const testSize = "72px";
     const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
-
-    context.font = `${testSize} monospace`;
-    const baselineWidth = context.measureText(testString).width;
-
-    context.font = `${testSize} '${fontName}', monospace`;
-    const testWidth = context.measureText(testString).width;
-
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return true; // WebView quirk – don’t flag as missing
+    ctx.font = `${testSize} monospace`;
+    const baselineWidth = ctx.measureText(testString).width;
+    ctx.font = `${testSize} '${fontName}', monospace`;
+    const testWidth = ctx.measureText(testString).width;
     return testWidth !== baselineWidth;
   } catch (e) {
     console.warn("Font detect failed, assuming installed:", fontName, e);
-    return true; // fail-safe: don't flag as missing if detection fails
+    return true;
   }
 }
 
@@ -61,30 +77,13 @@ function showToast(message) {
   toast.style.display = "block";
 }
 
-// Simple helper to dump full error details in the pane
-function showDetailedError(err) {
-  const out = document.getElementById("output");
-  let details = "";
-  if (err) {
-    if (err.stack) details = err.stack;
-    else {
-      try {
-        details = JSON.stringify(err, null, 2);
-      } catch {
-        details = String(err);
-      }
-    }
-  }
-  out.textContent = "⚠️ Error scanning fonts:\n\n" + details;
-  console.error("❌ Error in runFontChecker:", err);
-}
-
 async function runFontChecker() {
   console.log("🔍 Scan Fonts button clicked");
 
   try {
     let output = "Scanning...\n";
-    document.getElementById("output").textContent = output;
+    const outputEl = document.getElementById("output");
+    if (outputEl) outputEl.textContent = output;
 
     const missingFonts = {};
     const usedSlideFonts = new Set();
@@ -103,24 +102,24 @@ async function runFontChecker() {
         try {
           const slide = slides.items[i];
 
-          // ---- Load shapes (only the font path; API can be picky)
+          // Load slides' shapes
           let shapes = null;
-          let layoutShapes = null;
-
           try {
             shapes = slide.shapes;
             if (shapes) shapes.load("items/textFrame/textRange/font/name");
-          } catch (shapesErr) {
-            console.warn(`Slide ${i + 1}: couldn't load shapes (${shapesErr.message})`);
+          } catch (e) {
+            console.warn(`Slide ${i + 1}: couldn't load shapes (${e.message})`);
             shapes = null;
           }
 
+          // Load layout/master shapes
+          let layoutShapes = null;
           try {
             const layout = slide.layout;
             layoutShapes = layout && layout.shapes ? layout.shapes : null;
             if (layoutShapes) layoutShapes.load("items/textFrame/textRange/font/name");
-          } catch (layoutErr) {
-            console.warn(`Slide ${i + 1}: couldn't load layout shapes (${layoutErr.message})`);
+          } catch (e) {
+            console.warn(`Slide ${i + 1}: couldn't load layout shapes (${e.message})`);
             layoutShapes = null;
           }
 
@@ -129,11 +128,10 @@ async function runFontChecker() {
           const fonts = new Set();
           const layoutFonts = new Set();
 
-          // ---- Slide shapes
+          // Slide shapes
           if (shapes && shapes.items) {
             for (const shape of shapes.items) {
               try {
-                // Pictures won't have a textFrame, so this guard effectively skips them.
                 if (
                   shape.textFrame &&
                   shape.textFrame.textRange &&
@@ -150,7 +148,7 @@ async function runFontChecker() {
             }
           }
 
-          // ---- Layout (master) shapes
+          // Layout shapes
           if (layoutShapes && layoutShapes.items) {
             for (const shape of layoutShapes.items) {
               try {
@@ -170,7 +168,7 @@ async function runFontChecker() {
             }
           }
 
-          // ---- Check slide fonts
+          // Check slide fonts
           for (const font of fonts) {
             if (!isFontInstalled(font)) {
               if (!missingFonts[font]) missingFonts[font] = [];
@@ -178,7 +176,7 @@ async function runFontChecker() {
             }
           }
 
-          // ---- Check layout-only fonts
+          // Check layout-only fonts
           for (const font of layoutFonts) {
             const isMissing = !isFontInstalled(font);
             const isUsedInSlide = usedSlideFonts.has(font);
@@ -201,7 +199,7 @@ async function runFontChecker() {
         }
       }
 
-      // ---- Build output
+      // Build output
       output = "";
 
       if (usedSlideFonts.size > 0) {
@@ -228,7 +226,7 @@ async function runFontChecker() {
       }
     });
 
-    // ---- OUTPUT TO TASKPANE HTML
+    // Render output
     const outputElement = document.getElementById("output");
     const copyBtn = document.getElementById("copy-btn");
 
@@ -282,7 +280,7 @@ async function runFontChecker() {
       copyBtn.onclick = () => copyToClipboard(missingFontList.join(", "));
     }
   } catch (error) {
-    showDetailedError(error);
+    crash(error);
   }
 }
 
