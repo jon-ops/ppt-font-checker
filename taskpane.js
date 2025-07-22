@@ -21,44 +21,62 @@ Office.onReady((info) => {
 });
 
 function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(() => {
-    showToast("✅ Copied to clipboard");
-  }, (err) => {
-    console.error("Clipboard copy failed:", err);
-    showToast("❌ Copy failed");
-  });
+  navigator.clipboard.writeText(text).then(
+    () => showToast("✅ Copied to clipboard"),
+    (err) => {
+      console.error("Clipboard copy failed:", err);
+      showToast("❌ Copy failed");
+    }
+  );
 }
 
-
 function isFontInstalled(fontName) {
-  const testString = "mmmmmmmmmmlli";
-  const testSize = "72px";
+  try {
+    const testString = "mmmmmmmmmmlli";
+    const testSize = "72px";
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
 
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
+    context.font = `${testSize} monospace`;
+    const baselineWidth = context.measureText(testString).width;
 
-  context.font = `${testSize} monospace`;
-  const baselineWidth = context.measureText(testString).width;
+    context.font = `${testSize} '${fontName}', monospace`;
+    const testWidth = context.measureText(testString).width;
 
-  context.font = `${testSize} '${fontName}', monospace`;
-  const testWidth = context.measureText(testString).width;
-
-  return testWidth !== baselineWidth;
+    return testWidth !== baselineWidth;
+  } catch (e) {
+    console.warn("Font detect failed, assuming installed:", fontName, e);
+    return true; // fail-safe: don't flag as missing if detection fails
+  }
 }
 
 function showToast(message) {
   const toast = document.getElementById("toast");
   toast.textContent = message;
   toast.className = "show";
-
   setTimeout(() => {
     toast.className = toast.className.replace("show", "");
-    setTimeout(() => {
-      toast.style.display = "none";
-    }, 400);
+    setTimeout(() => (toast.style.display = "none"), 400);
   }, 2000);
-
   toast.style.display = "block";
+}
+
+// Simple helper to dump full error details in the pane
+function showDetailedError(err) {
+  const out = document.getElementById("output");
+  let details = "";
+  if (err) {
+    if (err.stack) details = err.stack;
+    else {
+      try {
+        details = JSON.stringify(err, null, 2);
+      } catch {
+        details = String(err);
+      }
+    }
+  }
+  out.textContent = "⚠️ Error scanning fonts:\n\n" + details;
+  console.error("❌ Error in runFontChecker:", err);
 }
 
 async function runFontChecker() {
@@ -84,10 +102,11 @@ async function runFontChecker() {
       for (let i = 0; i < slides.items.length; i++) {
         try {
           const slide = slides.items[i];
+
+          // ---- Load shapes (only the font path; API can be picky)
           let shapes = null;
           let layoutShapes = null;
 
-          // --- Load just the font paths; older APIs choke on "type"/"shapeType"
           try {
             shapes = slide.shapes;
             if (shapes) shapes.load("items/textFrame/textRange/font/name");
@@ -110,11 +129,11 @@ async function runFontChecker() {
           const fonts = new Set();
           const layoutFonts = new Set();
 
-          // --- Slide shapes
+          // ---- Slide shapes
           if (shapes && shapes.items) {
             for (const shape of shapes.items) {
               try {
-                // Pictures won't have a textFrame, so this guard also "skips images"
+                // Pictures won't have a textFrame, so this guard effectively skips them.
                 if (
                   shape.textFrame &&
                   shape.textFrame.textRange &&
@@ -131,7 +150,7 @@ async function runFontChecker() {
             }
           }
 
-          // --- Layout (master) shapes
+          // ---- Layout (master) shapes
           if (layoutShapes && layoutShapes.items) {
             for (const shape of layoutShapes.items) {
               try {
@@ -151,7 +170,7 @@ async function runFontChecker() {
             }
           }
 
-          // --- Check slide fonts
+          // ---- Check slide fonts
           for (const font of fonts) {
             if (!isFontInstalled(font)) {
               if (!missingFonts[font]) missingFonts[font] = [];
@@ -159,7 +178,7 @@ async function runFontChecker() {
             }
           }
 
-          // --- Check layout-only fonts
+          // ---- Check layout-only fonts
           for (const font of layoutFonts) {
             const isMissing = !isFontInstalled(font);
             const isUsedInSlide = usedSlideFonts.has(font);
@@ -182,7 +201,7 @@ async function runFontChecker() {
         }
       }
 
-      // --- Build output
+      // ---- Build output
       output = "";
 
       if (usedSlideFonts.size > 0) {
@@ -209,7 +228,7 @@ async function runFontChecker() {
       }
     });
 
-    // === OUTPUT TO TASKPANE HTML ===
+    // ---- OUTPUT TO TASKPANE HTML
     const outputElement = document.getElementById("output");
     const copyBtn = document.getElementById("copy-btn");
 
@@ -262,13 +281,9 @@ async function runFontChecker() {
       copyBtn.style.display = "inline-block";
       copyBtn.onclick = () => copyToClipboard(missingFontList.join(", "));
     }
-
   } catch (error) {
-    console.error("❌ Error in runFontChecker:", error);
-    document.getElementById("output").textContent =
-      "Error: " + (error.message || error.toString());
+    showDetailedError(error);
   }
 }
-
 
 window.runFontChecker = runFontChecker;
