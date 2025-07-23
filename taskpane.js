@@ -1,20 +1,22 @@
 /* global document, Office, PowerPoint */
 
-Office.onReady(() => {
-  const wireUp = () => {
-    const scanBtn = document.getElementById("scan-fonts");
-    if (!scanBtn) {
-      console.error("❌ scan-fonts button not found");
-      return;
-    }
-    scanBtn.onclick = runFontChecker;
-    console.log("✅ Scan button wired");
-  };
+Office.onReady((info) => {
+  if (info.host === Office.HostType.PowerPoint) {
+    console.log("✅ Office is ready in PowerPoint");
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", wireUp);
-  } else {
-    wireUp();
+    const sideload = document.getElementById("sideload-msg");
+    if (sideload) sideload.style.display = "none";
+
+    const appBody = document.getElementById("app-body");
+    if (appBody) appBody.style.display = "flex";
+
+    const scanBtn = document.getElementById("scan-fonts");
+    if (scanBtn) {
+      scanBtn.onclick = runFontChecker;
+      console.log("✅ Scan Fonts button is wired up");
+    } else {
+      console.log("❌ Scan Fonts button not found");
+    }
   }
 });
 
@@ -26,7 +28,6 @@ function copyToClipboard(text) {
     showToast("❌ Copy failed");
   });
 }
-
 
 function isFontInstalled(fontName) {
   const testString = "mmmmmmmmmmlli";
@@ -84,28 +85,24 @@ async function runFontChecker() {
           const slide = slides.items[i];
           let shapes, layout, layoutShapes;
 
-          try {
-            shapes = slide.shapes;
-            if (shapes) shapes.load("items/textFrame/textRange/font/name");
-          } catch (shapesErr) {
-            shapes = null;
-          }
+          // Load shapes with type and font info
+          shapes = slide.shapes;
+          if (shapes) shapes.load("items/type,items/textFrame/textRange/font/name");
 
-          try {
-            layout = slide.layout;
-            layoutShapes = (layout && layout.shapes) ? layout.shapes : null;
-            if (layoutShapes) layoutShapes.load("items/textFrame/textRange/font/name");
-          } catch (layoutErr) {
-            layoutShapes = null;
-          }
+          // Load layout (master) shapes with type and font info
+          layout = slide.layout;
+          layoutShapes = layout && layout.shapes;
+          if (layoutShapes) layoutShapes.load("items/type,items/textFrame/textRange/font/name");
 
           await context.sync();
 
           const fonts = new Set();
           const layoutFonts = new Set();
 
+          // Filter out pictures from slide shapes
           if (shapes && shapes.items) {
-            for (const shape of shapes.items) {
+            const nonPic = shapes.items.filter(s => s.type !== PowerPoint.ShapeType.Picture && s.type !== "Picture");
+            for (const shape of nonPic) {
               if (
                 shape.textFrame &&
                 shape.textFrame.textRange &&
@@ -119,8 +116,10 @@ async function runFontChecker() {
             }
           }
 
+          // Filter out pictures from master layout shapes
           if (layoutShapes && layoutShapes.items) {
-            for (const shape of layoutShapes.items) {
+            const nonPicLayout = layoutShapes.items.filter(s => s.type !== PowerPoint.ShapeType.Picture && s.type !== "Picture");
+            for (const shape of nonPicLayout) {
               if (
                 shape.textFrame &&
                 shape.textFrame.textRange &&
@@ -134,17 +133,16 @@ async function runFontChecker() {
             }
           }
 
-          const fontList = [...fonts];
-          fontList.forEach((font) => {
-            const isMissing = !isFontInstalled(font);
-            if (isMissing) {
+          // Check slide fonts for missing
+          for (const font of fonts) {
+            if (!isFontInstalled(font)) {
               if (!missingFonts[font]) missingFonts[font] = [];
               missingFonts[font].push(i + 1);
             }
-          });
+          }
 
-          const layoutFontList = [...layoutFonts];
-          layoutFontList.forEach((font) => {
+          // Check master fonts for missing where not used on slide
+          for (const font of layoutFonts) {
             const isMissing = !isFontInstalled(font);
             const isUsedInSlide = usedSlideFonts.has(font);
             if (isMissing && !isUsedInSlide) {
@@ -154,9 +152,9 @@ async function runFontChecker() {
                 missingFonts[font].push("Master only");
               }
             }
-          });
+          }
+
         } catch (err) {
-          // Just add the slide number to the skipped slides array!
           skippedSlides.push(i + 1);
           console.error(`Slide ${i + 1}: Skipped - not accessible by Office add-ins (${err.message})`);
         }
